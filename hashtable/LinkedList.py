@@ -82,6 +82,9 @@ class LinkedList:
             node.key = key
             node.value = value
 
+    def isempty(self):
+        return self.head is None
+
 
 if __name__ == "__main__":
     l = LinkedList()

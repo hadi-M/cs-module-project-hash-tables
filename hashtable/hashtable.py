@@ -47,7 +47,11 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        empty_count = 0
+        for linked_list in self.memory:
+            if linked_list.isempty():
+                empty_count += 1
+        return 1 - (empty_count/len(self.memory))
 
     def fnv1(self, key):
         """
@@ -96,7 +100,8 @@ class HashTable:
         # self.memory[self.hash_index(key)] = value
         index = self.hash_index(key)
         self.memory[index].insert_or_overwrite_value(key, value)
-
+        if self.get_load_factor() > 0.7:
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         """
@@ -109,6 +114,8 @@ class HashTable:
         # Your code here
         index = self.hash_index(key)
         self.memory[index].delete(key)
+        if self.get_load_factor() < 0.2 and self.capacity > MIN_CAPACITY:
+            self.resize(self.capacity // 2)
 
     def get(self, key):
         """
@@ -133,6 +140,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        old_memory = self.memory
+        self.__init__(new_capacity)
+        for old_linked_list in old_memory:
+            curr = old_linked_list.head
+            while curr is not None:
+                self.put(curr.key, curr.value)
+                curr = curr.next
+        # self.capacity = new_capacity
+        
 
 
 
