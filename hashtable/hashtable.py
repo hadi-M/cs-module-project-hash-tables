@@ -1,5 +1,5 @@
 from pdb import set_trace as st
-
+from LinkedList import LinkedList
 
 class HashTableEntry:
     """
@@ -26,7 +26,7 @@ class HashTable:
     def __init__(self, capacity):
         # Your code here
         self.capacity = capacity
-        self.memory = [None] * capacity
+        self.memory = [LinkedList() for i in range(capacity)]
 
     def get_num_slots(self):
         """
@@ -93,7 +93,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        self.memory[self.hash_index(key)] = value
+        # self.memory[self.hash_index(key)] = value
+        index = self.hash_index(key)
+        self.memory[index].insert_or_overwrite_value(key, value)
 
 
     def delete(self, key):
@@ -105,7 +107,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        self.memory[self.hash_index(key)] = None
+        index = self.hash_index(key)
+        self.memory[index].delete(key)
 
     def get(self, key):
         """
@@ -116,7 +119,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return self.memory[self.hash_index(key)]
+        index = self.hash_index(key)
+        return_node = self.memory[index].find(key)
+        if return_node == None:
+            return None
+        return return_node.value
 
     def resize(self, new_capacity):
         """
