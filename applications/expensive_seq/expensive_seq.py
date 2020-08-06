@@ -1,9 +1,12 @@
 # Your code here
+mem_cache = dict()
 
 
 def expensive_seq(x, y, z):
     # Your code here
-
+    if (x, y, z) not in mem_cache:
+        if x <= 0: y + z
+        if x >  0: exps(x-1,y+1,z) + exps(x-2,y+2,z*2) + exps(x-3,y+3,z*3)
 
 
 if __name__ == "__main__":
