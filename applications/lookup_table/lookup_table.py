@@ -1,4 +1,7 @@
+import random
+import math
 # Your code here
+result_cache = dict()
 
 
 def slowfun_too_slow(x, y):
@@ -9,12 +12,23 @@ def slowfun_too_slow(x, y):
 
     return v
 
+
 def slowfun(x, y):
     """
     Rewrite slowfun_too_slow() in here so that the program produces the same
     output, but completes quickly instead of taking ages to run.
     """
     # Your code here
+    global result_cache
+
+    if (x, y) not in result_cache.keys():
+        v = math.pow(x, y)
+        v = math.factorial(v)
+        v //= (x + y)
+        v %= 982451653
+        result_cache[(x, y)] = v
+    
+    return result_cache[(x, y)]
 
 
 

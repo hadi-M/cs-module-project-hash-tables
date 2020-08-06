@@ -1,3 +1,6 @@
+from pdb import set_trace as st
+from LinkedList import LinkedList
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -22,7 +25,8 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
+        self.capacity = capacity
+        self.memory = [LinkedList() for i in range(capacity)]
 
     def get_num_slots(self):
         """
@@ -35,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        return self.capacity
 
     def get_load_factor(self):
         """
@@ -43,8 +47,11 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        empty_count = 0
+        for linked_list in self.memory:
+            if linked_list.isempty():
+                empty_count += 1
+        return 1 - (empty_count/len(self.memory))
 
     def fnv1(self, key):
         """
@@ -52,9 +59,18 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
-
         # Your code here
+        
+        FNV_1A_OFFSET_BASIS = 0xcbf29ce484222325
+        FNV_1A_PRIME = 0x100000001b3
 
+        hash_val = FNV_1A_OFFSET_BASIS
+
+        for data_byte in key.encode():
+            hash_val ^= data_byte
+            hash_val *= FNV_1A_PRIME
+
+        return hash_val
 
     def djb2(self, key):
         """
@@ -64,14 +80,13 @@ class HashTable:
         """
         # Your code here
 
-
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -82,7 +97,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        # self.memory[self.hash_index(key)] = value
+        index = self.hash_index(key)
+        self.memory[index].insert_or_overwrite_value(key, value)
+        if self.get_load_factor() > 0.7:
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         """
@@ -93,7 +112,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        index = self.hash_index(key)
+        self.memory[index].delete(key)
+        if self.get_load_factor() < 0.2 and self.capacity > MIN_CAPACITY:
+            self.resize(self.capacity // 2)
 
     def get(self, key):
         """
@@ -104,7 +126,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        index = self.hash_index(key)
+        return_node = self.memory[index].find(key)
+        if return_node == None:
+            return None
+        return return_node.value
 
     def resize(self, new_capacity):
         """
@@ -114,6 +140,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        old_memory = self.memory
+        self.__init__(new_capacity)
+        for old_linked_list in old_memory:
+            curr = old_linked_list.head
+            while curr is not None:
+                self.put(curr.key, curr.value)
+                curr = curr.next
+        # self.capacity = new_capacity
+        
 
 
 
@@ -134,7 +169,7 @@ if __name__ == "__main__":
     ht.put("line_12", "And stood awhile in thought.")
 
     print("")
-
+    # st()
     # Test storing beyond capacity
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
